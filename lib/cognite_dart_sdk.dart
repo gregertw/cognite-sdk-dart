@@ -4,8 +4,15 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 part 'models/timeseries.dart';
+part 'models/datapoint.dart';
+part 'models/datapoints.dart';
+part 'models/datapoints_filter.dart';
 
-var dio = Dio();
+var _dio = Dio();
+
+class CDFApiClient_ParameterException implements Exception {
+  String errMsg() => 'API parameters do not satisfy requirements';
+}
 
 class CustomInterceptors extends InterceptorsWrapper {
   String apikey;
@@ -42,18 +49,18 @@ class CDFApiClient {
       this.baseUrl = 'https://api.cognitedata.com',
       this.debug = false}) {
     this._apiUrl = this.baseUrl + '/api/v1/projects/' + this.project;
-    dio.options.baseUrl = this._apiUrl;
+    _dio.options.baseUrl = this._apiUrl;
     if (this.debug) {
-      dio.interceptors.add(LogInterceptor(requestBody: true));
+      _dio.interceptors.add(LogInterceptor(requestBody: true));
     }
-    dio.interceptors.add(CustomInterceptors(this.apikey));
-    dio.options.receiveTimeout = 15000;
+    _dio.interceptors.add(CustomInterceptors(this.apikey));
+    _dio.options.receiveTimeout = 15000;
   }
 
   Future<List<TimeSeriesModel>> getTimeSeries() async {
     Response res;
     try {
-      res = await dio.get('/timeseries');
+      res = await _dio.get('/timeseries');
     } on DioError catch (e) {
       print(e.toString());
       return null;
@@ -61,10 +68,29 @@ class CDFApiClient {
     if (res.statusCode >= 200 && res.statusCode <= 299) {
       List<TimeSeriesModel> list = List();
       var ts = TimeSeriesModel();
-      // TODO(iterate)
+      // FIXME: iterate
       ts.fromJson(res.data['items'][0]);
       list.add(ts);
       return list;
+    }
+    return null;
+  }
+
+  Future<DatapointsModel> getDatapoints(DatapointsFilterModel filter) async {
+    Response res;
+    try {
+      Map data = {
+        'items': [filter.toJson()]
+      };
+      res = await _dio.post('/timeseries/data/list', data: data);
+    } on DioError catch (e) {
+      print(e.toString());
+      return null;
+    }
+    if (res.statusCode >= 200 && res.statusCode <= 299) {
+      DatapointsModel dp = DatapointsModel();
+      dp.fromJson(res.data['items'][0]);
+      return dp;
     }
     return null;
   }
