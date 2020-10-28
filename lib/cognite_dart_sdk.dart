@@ -3,16 +3,13 @@ library cognite_dart_sdk;
 import 'dart:convert';
 import 'package:dio/dio.dart';
 
+part 'exceptions.dart';
 part 'models/timeseries.dart';
 part 'models/datapoint.dart';
 part 'models/datapoints.dart';
 part 'models/datapoints_filter.dart';
 
 var _dio = Dio();
-
-class CDFApiClient_ParameterException implements Exception {
-  String errMsg() => 'API parameters do not satisfy requirements';
-}
 
 class CustomInterceptors extends InterceptorsWrapper {
   String apikey;
@@ -29,7 +26,9 @@ class CustomInterceptors extends InterceptorsWrapper {
 
   @override
   Future onResponse(Response response) {
-    response.data = jsonDecode(response.data);
+    if (response.data is String) {
+      response.data = jsonDecode(response.data);
+    }
     return super.onResponse(response);
   }
 
@@ -57,7 +56,7 @@ class CDFApiClient {
     _dio.options.receiveTimeout = 15000;
   }
 
-  Future<List<TimeSeriesModel>> getTimeSeries() async {
+  Future<List<TimeSeriesModel>> getAllTimeSeries() async {
     Response res;
     try {
       res = await _dio.get('/timeseries');
@@ -76,7 +75,8 @@ class CDFApiClient {
     return null;
   }
 
-  Future<DatapointsModel> getDatapoints(DatapointsFilterModel filter) async {
+  Future<DatapointsModel> getDatapoints(DatapointsFilterModel filter,
+      {int layer: 0}) async {
     Response res;
     try {
       Map data = {

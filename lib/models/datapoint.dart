@@ -6,6 +6,8 @@ class DatapointModel {
     Coordinated Universal Time (UTC), minus leap seconds.
   */
   int timestamp;
+  // timestamp in DateTime object
+  DateTime datetime;
   // Numeric value of a data point
   double value;
   // String value of a data point
@@ -30,14 +32,19 @@ class DatapointModel {
   double discreteVariance;
   // The total variation of the interpolated underlying function.
   double totalVariance;
+  /* As we load at deeper zoom levels, we can set the layer id with 0 as first */
+  int layer = -1;
+
+  get localDateTime => datetime.toLocal();
 
   @override
   String toString() {
-    return 'DatapointModel[ timestamp=$timestamp, value=$value, str_value=$str_value, average=$average, max=$max, min=$min, count=$count, sum=$sum, interpolation=$interpolation, stepInterpolation=$stepInterpolation, continuousVariance=$continuousVariance, discreteVariance=$discreteVariance, totalVariance=$totalVariance ]';
+    return 'DatapointModel[ layer=$layer, timestamp=$timestamp, value=$value, str_value=$str_value, average=$average, max=$max, min=$min, count=$count, sum=$sum, interpolation=$interpolation, stepInterpolation=$stepInterpolation, continuousVariance=$continuousVariance, discreteVariance=$discreteVariance, totalVariance=$totalVariance ]';
   }
 
   DatapointModel.fromJson(Map<String, dynamic> json) {
     timestamp = json['timestamp'] ?? null;
+    datetime = DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
     if (json['value'] is double) {
       value = json['value'] ?? null;
     } else {

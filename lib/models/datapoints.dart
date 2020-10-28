@@ -11,12 +11,72 @@ class DatapointsModel {
   String unit;
   /* Whether the time series is a step series or not. */
   bool isStep;
+  /* Number of layers we have */
+  int layers = 0;
 
-  List<DatapointModel> datapoints = const [];
+  List<DatapointModel> _datapoints = [];
+  get datapointsLength => _datapoints.length;
+
+  get datapoints => _datapoints;
+
+  List<DatapointModel> layer({int layer}) {
+    // Return only last layer if no layer specified
+    if (layer == null) {
+      layer = layers;
+    }
+    List<DatapointModel> ret = [];
+    _datapoints.forEach((element) {
+      if (element.layer == layer) {
+        ret.add(element);
+      }
+    });
+    return ret;
+  }
 
   @override
   String toString() {
-    return 'DatapointsModel[id=$id, externalId=$externalId, isString=$isString, unit=$unit, isStep=$isStep, datapoints=$datapoints ]';
+    return 'DatapointsModel[id=$id, externalId=$externalId, isString=$isString, unit=$unit, isStep=$isStep, datapoints=$_datapoints ]';
+  }
+
+  void pushLayer() {
+    layers += 1;
+    _datapoints.forEach((element) {
+      if (element.layer < 0) {
+        element.layer = layers;
+      }
+    });
+  }
+
+  void popLayer() {
+    if (layers == 0) {
+      return;
+    }
+    for (var i = 0; i < _datapoints.length; i++) {
+      if (_datapoints[i].layer == layers) {
+        _datapoints.removeAt(i);
+        i--;
+      }
+    }
+    layers -= 1;
+  }
+
+  void clearLayers() {
+    _datapoints.forEach((element) {
+      element.layer = -1;
+    });
+  }
+
+  void addDatapoints(DatapointsModel dp) {
+    dp.clearLayers();
+    _datapoints.addAll(dp._datapoints);
+    _datapoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    // Remove duplicates
+    for (var i = 0; i < _datapoints.length - 1; i++) {
+      if (_datapoints[i].timestamp == _datapoints[i + 1].timestamp) {
+        _datapoints.removeAt(i + 1);
+      }
+    }
+    pushLayer();
   }
 
   fromJson(Map<String, dynamic> json) {
@@ -25,12 +85,13 @@ class DatapointsModel {
     isString = json['isString'] ?? null;
     unit = json['unit'] ?? null;
     isStep = json['isStep'] ?? null;
-    datapoints = DatapointModel.listFromJson(json['datapoints'] ?? null);
+    _datapoints = DatapointModel.listFromJson(json['datapoints'] ?? null);
+    pushLayer();
   }
 
   Map toJson() {
     List<Map<String, dynamic>> list = const [];
-    datapoints.forEach((element) => list.add(element.toJson()));
+    _datapoints.forEach((element) => list.add(element.toJson()));
     return {'externalId': externalId, 'datapoints': list};
   }
 }

@@ -1,12 +1,12 @@
 import 'package:cognite_dart_sdk/cognite_dart_sdk.dart';
 
 void main() {
-  //  'https://greger.ngrok.io'
+  DatapointsModel dps;
   CDFApiClient client = CDFApiClient(
       project: 'gregerwedel',
       apikey: '',
       baseUrl: 'https://greenfield.cognitedata.com');
-  client.getTimeSeries().then((res) {
+  client.getAllTimeSeries().then((res) {
     if (res != null) {
       res.forEach((k) => print(k.externalId));
     }
@@ -15,15 +15,39 @@ void main() {
   filter.externalId = 'fitbit_c2009283ac84526e9f0e01ef4cc9fa2a';
   filter.end = DateTime.now().millisecondsSinceEpoch;
   filter.start = filter.end - 3600000;
-  filter.limit = 600;
+  filter.resolution = 600;
   filter.aggregates = ['min', 'max', 'average', 'count'];
-  filter.granularity = '7s';
+  print('Retrieving datapoints at resolution: ${filter.resolution}');
+  print(filter.toString());
   client.getDatapoints(filter).then((res) {
     if (res != null && res.datapoints.isNotEmpty) {
+      dps = res;
       res.datapoints.forEach((element) {
         print('${element.timestamp}, ${element.average}');
       });
-      print(res.externalId);
+      filter.resolution = 60;
+      print('Retrieving datapoints at resolution: ${filter.resolution}');
+      client.getDatapoints(filter).then((res) {
+        if (res != null && res.datapoints.isNotEmpty) {
+          dps.addDatapoints(res);
+          dps.datapoints.forEach((element) {
+            print('${element.timestamp}, ${element.layer}');
+          });
+          print('Only last layer...');
+          dps.layer().forEach((element) {
+            print('${element.timestamp}, ${element.layer}');
+          });
+          print('Only first layer...');
+          dps.layer(layer: 1).forEach((element) {
+            print('${element.timestamp}, ${element.layer}');
+          });
+          print('Popping a layer...');
+          dps.popLayer();
+          dps.datapoints.forEach((element) {
+            print('${element.timestamp}, ${element.layer}');
+          });
+        }
+      });
     }
   });
 }
