@@ -6,6 +6,11 @@ void main() {
       project: 'gregerwedel',
       apikey: '',
       baseUrl: 'https://greenfield.cognitedata.com');
+  client.getStatus().then((res) {
+    if (res != null) {
+      print(res.toString());
+    }
+  });
   client.getAllTimeSeries().then((res) {
     if (res != null) {
       res.forEach((k) => print(k.externalId));

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 part 'exceptions.dart';
+part 'models/status.dart';
 part 'models/timeseries.dart';
 part 'models/datapoint.dart';
 part 'models/datapoints.dart';
@@ -54,6 +55,23 @@ class CDFApiClient {
     }
     _dio.interceptors.add(CustomInterceptors(this.apikey));
     _dio.options.receiveTimeout = 15000;
+  }
+
+  Future<StatusModel> getStatus() async {
+    Response res;
+    try {
+      res = await _dio.get(baseUrl + '/login/status');
+    } on DioError catch (e) {
+      print(e.toString());
+      return null;
+    }
+    if (res.statusCode >= 200 &&
+        res.statusCode <= 299 &&
+        res.data is Map &&
+        res.data.containsKey('data')) {
+      return StatusModel.fromJson(res.data['data']);
+    }
+    return null;
   }
 
   Future<List<TimeSeriesModel>> getAllTimeSeries() async {
