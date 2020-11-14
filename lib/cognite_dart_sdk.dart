@@ -1,7 +1,9 @@
 library cognite_dart_sdk;
 
-import 'dart:convert';
+import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
+import 'dio_interceptors.dart';
 
 part 'exceptions.dart';
 part 'models/status.dart';
@@ -11,33 +13,8 @@ part 'models/datapoints.dart';
 part 'models/datapoints_filter.dart';
 
 var _dio = Dio();
-
-class CustomInterceptors extends InterceptorsWrapper {
-  String apikey;
-
-  @override
-  CustomInterceptors(this.apikey);
-
-  @override
-  Future onRequest(RequestOptions options) {
-    options.headers['api-key'] = this.apikey;
-    options.responseType = ResponseType.plain;
-    return super.onRequest(options);
-  }
-
-  @override
-  Future onResponse(Response response) {
-    if (response.data is String) {
-      response.data = jsonDecode(response.data);
-    }
-    return super.onResponse(response);
-  }
-
-  @override
-  Future onError(DioError err) {
-    return super.onError(err);
-  }
-}
+Logger _log;
+List<dynamic> _history;
 
 class CDFApiClient {
   String baseUrl, project, apikey, _apiUrl;
@@ -49,20 +26,20 @@ class CDFApiClient {
       this.baseUrl = 'https://api.cognitedata.com',
       this.debug = false}) {
     this._apiUrl = this.baseUrl + '/api/v1/projects/' + this.project;
+    _history = List<dynamic>();
     _dio.options.baseUrl = this._apiUrl;
-    if (this.debug) {
-      _dio.interceptors.add(LogInterceptor(requestBody: true));
-    }
-    _dio.interceptors.add(CustomInterceptors(this.apikey));
+    _dio.interceptors.add(CustomInterceptor(apikey, _history));
     _dio.options.receiveTimeout = 15000;
+    _log = Logger(level: Level.warning, printer: MyLogPrinter(), output: null);
+    _dio.interceptors.add(CustomLogInterceptor(log: _log));
   }
 
   Future<StatusModel> getStatus() async {
     Response res;
     try {
       res = await _dio.get(baseUrl + '/login/status');
-    } on DioError catch (e) {
-      print(e.toString());
+    } on DioError {
+      _log.w('getStatus() failed with DioError');
       return null;
     }
     if (res.statusCode >= 200 &&
@@ -71,6 +48,7 @@ class CDFApiClient {
         res.data.containsKey('data')) {
       return StatusModel.fromJson(res.data['data']);
     }
+    _log.w('getStatus() returned non-2xx response code');
     return null;
   }
 
@@ -78,8 +56,8 @@ class CDFApiClient {
     Response res;
     try {
       res = await _dio.get('/timeseries');
-    } on DioError catch (e) {
-      print(e.toString());
+    } on DioError {
+      _log.w('getStatus() failed with DioError');
       return null;
     }
     if (res.statusCode >= 200 && res.statusCode <= 299) {
@@ -90,6 +68,7 @@ class CDFApiClient {
       list.add(ts);
       return list;
     }
+    _log.w('getStatus() returned non-2xx response code');
     return null;
   }
 
@@ -101,8 +80,8 @@ class CDFApiClient {
         'items': [filter.toJson()]
       };
       res = await _dio.post('/timeseries/data/list', data: data);
-    } on DioError catch (e) {
-      print(e.toString());
+    } on DioError {
+      _log.w('getStatus() failed with DioError');
       return null;
     }
     if (res.statusCode >= 200 && res.statusCode <= 299) {
@@ -110,6 +89,7 @@ class CDFApiClient {
       dp.fromJson(res.data['items'][0]);
       return dp;
     }
+    _log.w('getStatus() returned non-2xx response code');
     return null;
   }
 }
