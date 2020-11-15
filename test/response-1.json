@@ -1,0 +1,55 @@
+{
+    "items": [
+        {
+            "isString": false,
+            "isStep": false,
+            "unit": "beats",
+            "id": 29107693408255,
+            "externalId": "ts_c2009283ac84526e9f0e01ef4cc9fa2a",
+            "datapoints": [
+                {
+                    "timestamp": 1605422100000,
+                    "average": 70.79713279132793,
+                    "max": 79.0,
+                    "min": 63.0,
+                    "count": 78
+                },
+                {
+                    "timestamp": 1605422700000,
+                    "average": 69.76475609756098,
+                    "max": 75.0,
+                    "min": 65.0,
+                    "count": 72
+                },
+                {
+                    "timestamp": 1605423300000,
+                    "average": 69.82883333333334,
+                    "max": 85.0,
+                    "min": 63.0,
+                    "count": 76
+                },
+                {
+                    "timestamp": 1605423900000,
+                    "average": 72.30366666666667,
+                    "max": 76.0,
+                    "min": 68.0,
+                    "count": 56
+                },
+                {
+                    "timestamp": 1605424500000,
+                    "average": 74.33833333333334,
+                    "max": 77.0,
+                    "min": 72.0,
+                    "count": 68
+                },
+                {
+                    "timestamp": 1605425100000,
+                    "average": 75.04424778761062,
+                    "max": 77.0,
+                    "min": 74.0,
+                    "count": 8
+                }
+            ]
+        }
+    ]
+}
