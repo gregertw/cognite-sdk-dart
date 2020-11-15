@@ -43,7 +43,7 @@ class MyLogPrinter extends LogPrinter {
 // Log response on Level.debug
 // Log extra headers on Level.verbose
 class CustomLogInterceptor extends Interceptor {
-  CustomLogInterceptor({this.log = null}) {
+  CustomLogInterceptor({this.log}) {
     if (log == null) {
       log = Logger();
     }
@@ -94,7 +94,7 @@ class CustomLogInterceptor extends Interceptor {
   void _printResponse(Response response, Level level) {
     log.log(level, 'uri: ${response.request?.uri}');
     log.log(level, 'statusCode: ${response.statusCode}');
-    if (response.isRedirect) {
+    if (response.isRedirect != null && response.isRedirect) {
       log.log(level, 'redirect: ${response.realUri}');
     }
     log.v('headers:');

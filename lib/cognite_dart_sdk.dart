@@ -1,6 +1,7 @@
 library cognite_dart_sdk;
 
 import 'dart:async';
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'dio_interceptors.dart';
@@ -18,19 +19,24 @@ List<dynamic> _history;
 
 class CDFApiClient {
   String baseUrl, project, apikey, _apiUrl;
-  bool debug;
+  Level logLevel;
+  DefaultHttpClientAdapter httpAdapter = DefaultHttpClientAdapter();
 
   CDFApiClient(
       {this.project,
       this.apikey,
       this.baseUrl = 'https://api.cognitedata.com',
-      this.debug = false}) {
+      this.logLevel = Level.warning,
+      this.httpAdapter}) {
     this._apiUrl = this.baseUrl + '/api/v1/projects/' + this.project;
     _history = List<dynamic>();
+    if (this.httpAdapter != null) {
+      _dio.httpClientAdapter = httpAdapter;
+    }
     _dio.options.baseUrl = this._apiUrl;
     _dio.interceptors.add(CustomInterceptor(apikey, _history));
     _dio.options.receiveTimeout = 15000;
-    _log = Logger(level: Level.warning, printer: MyLogPrinter(), output: null);
+    _log = Logger(level: logLevel, printer: MyLogPrinter(), output: null);
     _dio.interceptors.add(CustomLogInterceptor(log: _log));
   }
 
@@ -61,12 +67,7 @@ class CDFApiClient {
       return null;
     }
     if (res.statusCode >= 200 && res.statusCode <= 299) {
-      List<TimeSeriesModel> list = List();
-      var ts = TimeSeriesModel();
-      // FIXME: iterate
-      ts.fromJson(res.data['items'][0]);
-      list.add(ts);
-      return list;
+      return TimeSeriesModel.listFromJson(res.data['items'] ?? null);
     }
     _log.w('getStatus() returned non-2xx response code');
     return null;

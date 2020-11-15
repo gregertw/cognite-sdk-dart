@@ -1,4 +1,5 @@
 import 'package:cognite_dart_sdk/cognite_dart_sdk.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   DatapointsModel dps;

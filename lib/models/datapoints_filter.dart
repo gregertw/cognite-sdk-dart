@@ -13,7 +13,7 @@ class DatapointsFilterModel {
   get resolution => _resolution;
   set start(int i) {
     if (i <= 0) {
-      throw CDFApiClient_DatapointFilterException;
+      throw CdfApiClientDatapointFilterException;
     } else {
       _start = i;
     }
@@ -23,7 +23,7 @@ class DatapointsFilterModel {
   get end => _end;
   set end(int i) {
     if (i <= 0) {
-      throw CDFApiClient_DatapointFilterException;
+      throw CdfApiClientDatapointFilterException;
     } else if (i <= _start) {
       _end = _start + 1;
     } else {
@@ -88,7 +88,7 @@ class DatapointsFilterModel {
         ret['granularity'] = granularity;
       } else {
         // Granularity must be set if aggregates is set
-        throw (CDFApiClient_ParameterException);
+        throw (CdfApiClientParameterException);
       }
     }
     return ret;

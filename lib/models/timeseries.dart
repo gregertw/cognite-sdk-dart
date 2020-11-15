@@ -33,7 +33,14 @@ class TimeSeriesModel {
     return 'TimeSeriesModel[id=$id, externalId=$externalId, name=$name, isString=$isString, metadata=$metadata, unit=$unit, assetId=$assetId, isStep=$isStep, description=$description, securityCategories=$securityCategories, dataSetId=$dataSetId, createdTime=$createdTime, lastUpdatedTime=$lastUpdatedTime, ]';
   }
 
-  fromJson(Map<String, dynamic> json) {
+  static List<TimeSeriesModel> listFromJson(List<dynamic> json) {
+    List<TimeSeriesModel> ts = json == null
+        ? <TimeSeriesModel>[]
+        : json.map((value) => TimeSeriesModel.fromJson(value)).toList();
+    return ts;
+  }
+
+  TimeSeriesModel.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? null;
     createdTime = json['createdTime'] ?? null;
     lastUpdatedTime = json['lastUpdatedTime'] ?? null;

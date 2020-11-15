@@ -11,7 +11,7 @@ class DatapointModel {
   // Numeric value of a data point
   double value;
   // String value of a data point
-  String str_value;
+  String strValue;
   // The integral average value in the aggregate period.
   double average;
   // The maximum value in the aggregate period.
@@ -39,7 +39,7 @@ class DatapointModel {
 
   @override
   String toString() {
-    return 'DatapointModel[ layer=$layer, timestamp=$timestamp, value=$value, str_value=$str_value, average=$average, max=$max, min=$min, count=$count, sum=$sum, interpolation=$interpolation, stepInterpolation=$stepInterpolation, continuousVariance=$continuousVariance, discreteVariance=$discreteVariance, totalVariance=$totalVariance ]';
+    return 'DatapointModel[ layer=$layer, timestamp=$timestamp, value=$value, strValue=$strValue, average=$average, max=$max, min=$min, count=$count, sum=$sum, interpolation=$interpolation, stepInterpolation=$stepInterpolation, continuousVariance=$continuousVariance, discreteVariance=$discreteVariance, totalVariance=$totalVariance ]';
   }
 
   DatapointModel.fromJson(Map<String, dynamic> json) {
@@ -48,7 +48,7 @@ class DatapointModel {
     if (json['value'] is double) {
       value = json['value'] ?? null;
     } else {
-      str_value = json['value'] ?? null;
+      strValue = json['value'] ?? null;
     }
     average = json['average'] ?? null;
     max = json['max'] ?? null;
@@ -68,5 +68,5 @@ class DatapointModel {
         : json.map((value) => DatapointModel.fromJson(value)).toList();
   }
 
-  Map toJson() => {'timestamp': timestamp, 'value': value ?? str_value};
+  Map toJson() => {'timestamp': timestamp, 'value': value ?? strValue};
 }
