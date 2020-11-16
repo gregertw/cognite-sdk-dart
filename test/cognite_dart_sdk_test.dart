@@ -110,6 +110,23 @@ void main() {
   });
 
   group('retrieve timeseries datapoints', () {
+    test('should return null datapoints', () async {
+      final httpResponse = ResponseBody.fromString(
+        "",
+        404,
+        headers: dioHttpHeadersForResponseBody,
+      );
+      when(dioAdapterMock.fetch(any, any, any))
+          .thenAnswer((_) async => httpResponse);
+      DatapointsFilterModel filter = DatapointsFilterModel();
+      filter.externalId = 'ts_doesnotexist';
+      filter.end = DateTime.now().millisecondsSinceEpoch;
+      filter.start = filter.end - 3600000;
+      filter.resolution = 600;
+      filter.aggregates = ['min', 'max', 'average', 'count'];
+      var res = await client.getDatapoints(filter);
+      expect(res, isNull, reason: 'Response is not expected');
+    });
     test('should return a list of datapoints', () async {
       var file = File(Directory.current.path + '/test/response-1.json');
 
@@ -131,6 +148,37 @@ void main() {
       expect(res.datapointsLength, 6, reason: '6 datapoints expected');
       expect(res.datapoints[0].timestamp, 1605422100000);
       expect(res.datapoints[0].average, 70.79713279132793);
+    });
+
+    test('should return a longer list of datapoints', () async {
+      var file = File(Directory.current.path + '/test/response-2.json');
+
+      final httpResponse = ResponseBody.fromString(
+        "${await (file.readAsString())}",
+        200,
+        headers: dioHttpHeadersForResponseBody,
+      );
+      when(dioAdapterMock.fetch(any, any, any))
+          .thenAnswer((_) async => httpResponse);
+      DatapointsFilterModel filter = DatapointsFilterModel();
+      filter.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
+      filter.end = DateTime.now().millisecondsSinceEpoch;
+      filter.start = filter.end - 3600000;
+      filter.resolution = 60;
+      filter.aggregates = ['min', 'max', 'average', 'count'];
+      var res = await client.getDatapoints(filter);
+      expect(res, isNotNull, reason: 'Response is expected');
+      expect(res.datapointsLength, 53, reason: '53 datapoints expected');
+      expect(res.datapoints[0].timestamp, 1605422100000);
+      expect(
+        res.datapoints[0].average,
+        74.01888888888888,
+      );
+      expect(res.datapoints[52].timestamp, 1605425280000);
+      expect(
+        res.datapoints[52].average,
+        75.34782608695652,
+      );
     });
   });
 }
