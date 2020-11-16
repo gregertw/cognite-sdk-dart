@@ -45,7 +45,6 @@ class CDFApiClient {
     try {
       res = await _dio.get(baseUrl + '/login/status');
     } on DioError {
-      _log.w('getStatus() failed with DioError');
       return null;
     }
     if (res.statusCode >= 200 &&
@@ -63,7 +62,6 @@ class CDFApiClient {
     try {
       res = await _dio.get('/timeseries');
     } on DioError {
-      _log.w('getStatus() failed with DioError');
       return null;
     }
     if (res.statusCode >= 200 && res.statusCode <= 299) {
@@ -82,7 +80,6 @@ class CDFApiClient {
       };
       res = await _dio.post('/timeseries/data/list', data: data);
     } on DioError {
-      _log.w('getStatus() failed with DioError');
       return null;
     }
     if (res.statusCode >= 200 && res.statusCode <= 299) {

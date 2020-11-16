@@ -66,14 +66,16 @@ class DatapointsModel {
     });
   }
 
-  void addDatapoints(DatapointsModel dp) {
+  void addDatapoints(DatapointsModel dp, {removeDuplicates: false}) {
     dp.clearLayers();
     _datapoints.addAll(dp._datapoints);
     _datapoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     // Remove duplicates
-    for (var i = 0; i < _datapoints.length - 1; i++) {
-      if (_datapoints[i].timestamp == _datapoints[i + 1].timestamp) {
-        _datapoints.removeAt(i + 1);
+    if (removeDuplicates) {
+      for (var i = 0; i < _datapoints.length - 1; i++) {
+        if (_datapoints[i].timestamp == _datapoints[i + 1].timestamp) {
+          _datapoints.removeAt(i + 1);
+        }
       }
     }
     pushLayer();
