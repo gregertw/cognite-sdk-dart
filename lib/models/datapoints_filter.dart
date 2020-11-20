@@ -1,4 +1,4 @@
-part of 'package:cognite_dart_sdk/cognite_dart_sdk.dart';
+part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
 class DatapointsFilterModel {
   int _start = 0;
@@ -13,7 +13,7 @@ class DatapointsFilterModel {
   get resolution => _resolution;
   set start(int i) {
     if (i <= 0) {
-      throw CdfApiClientDatapointFilterException;
+      throw CDFApiClientDatapointFilterException;
     } else {
       _start = i;
     }
@@ -23,7 +23,7 @@ class DatapointsFilterModel {
   get end => _end;
   set end(int i) {
     if (i <= 0) {
-      throw CdfApiClientDatapointFilterException;
+      throw CDFApiClientDatapointFilterException;
     } else if (i <= _start) {
       _end = _start + 1;
     } else {
@@ -88,7 +88,7 @@ class DatapointsFilterModel {
         ret['granularity'] = granularity;
       } else {
         // Granularity must be set if aggregates is set
-        throw (CdfApiClientParameterException);
+        throw (CDFApiClientParameterException);
       }
     }
     return ret;

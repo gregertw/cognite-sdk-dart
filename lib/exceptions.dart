@@ -1,9 +1,9 @@
-part of 'package:cognite_dart_sdk/cognite_dart_sdk.dart';
+part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
-class CdfApiClientParameterException implements Exception {
+class CDFApiClientParameterException implements Exception {
   String errMsg() => 'API parameters do not satisfy requirements';
 }
 
-class CdfApiClientDatapointFilterException implements Exception {
+class CDFApiClientDatapointFilterException implements Exception {
   String errMsg() => 'Filter for datapoints is invalid';
 }

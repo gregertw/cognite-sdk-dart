@@ -1,4 +1,4 @@
-part of 'package:cognite_dart_sdk/cognite_dart_sdk.dart';
+part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
 class DatapointModel {
   /* 

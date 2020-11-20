@@ -1,13 +1,11 @@
-import 'dart:convert';
-import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
+part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
-class CustomInterceptor extends Interceptor {
+class _CustomInterceptor extends Interceptor {
   String apikey;
   List<dynamic> history;
 
   @override
-  CustomInterceptor(this.apikey, this.history);
+  _CustomInterceptor(this.apikey, this.history);
 
   @override
   Future onRequest(RequestOptions options) async {
@@ -31,7 +29,7 @@ class CustomInterceptor extends Interceptor {
   }
 }
 
-class MyLogPrinter extends LogPrinter {
+class _MyLogPrinter extends LogPrinter {
   @override
   List<String> log(LogEvent event) {
     return [event.message];
@@ -42,8 +40,8 @@ class MyLogPrinter extends LogPrinter {
 // Log request on Level.info
 // Log response on Level.debug
 // Log extra headers on Level.verbose
-class CustomLogInterceptor extends Interceptor {
-  CustomLogInterceptor({this.log}) {
+class _CustomLogInterceptor extends Interceptor {
+  _CustomLogInterceptor({this.log}) {
     if (log == null) {
       log = Logger();
     }

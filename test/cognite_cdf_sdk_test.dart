@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
-import 'package:cognite_dart_sdk/cognite_dart_sdk.dart';
+import 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
@@ -98,7 +98,7 @@ void main() {
       );
       when(dioAdapterMock.fetch(any, any, any))
           .thenAnswer((_) async => httpResponse);
-      var res = await client.getAllTimeSeries();
+      var res = await TimeSeriesAPI(client).getAllTimeSeries();
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.length, 2, reason: 'Two timeseries entries');
       expect(res[0].id, 29107693408255);
@@ -126,7 +126,7 @@ void main() {
       filter.start = filter.end - 3600000;
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res = await client.getDatapoints(filter);
+      var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res, isNull, reason: 'Response is not expected');
     });
     test('should return a list of datapoints', () async {
@@ -145,7 +145,7 @@ void main() {
       filter.start = filter.end - 3600000;
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res = await client.getDatapoints(filter);
+      var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.datapointsLength, 6, reason: '6 datapoints expected');
       expect(res.datapoints[0].timestamp, 1605422100000);
@@ -168,7 +168,7 @@ void main() {
       filter.start = filter.end - 3600000;
       filter.resolution = 60;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res = await client.getDatapoints(filter);
+      var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.datapointsLength, 53, reason: '53 datapoints expected');
       expect(res.datapoints[0].timestamp, 1605422100000);
@@ -205,7 +205,7 @@ void main() {
       filter.start = filter.end - 3600000;
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res = await client.getDatapoints(filter);
+      var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res.layer(layer: 1).length, 6,
           reason: '6 datapoints expected in first layer');
       when(dioAdapterMock.fetch(any, any, any))
@@ -216,7 +216,7 @@ void main() {
       filter2.start = filter.end - 3600000;
       filter2.resolution = 60;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res2 = await client.getDatapoints(filter2);
+      var res2 = await TimeSeriesAPI(client).getDatapoints(filter2);
       res.addDatapoints(res2);
       expect(res.layer().length, 53,
           reason: '53 datapoints expected from last layer');
@@ -252,7 +252,7 @@ void main() {
       filter.start = filter.end - 3600000;
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res = await client.getDatapoints(filter);
+      var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res.layer(layer: 1).length, 6,
           reason: '6 datapoints expected in first layer');
       when(dioAdapterMock.fetch(any, any, any))
@@ -263,7 +263,7 @@ void main() {
       filter2.start = filter.end - 3600000;
       filter2.resolution = 60;
       filter.aggregates = ['min', 'max', 'average', 'count'];
-      var res2 = await client.getDatapoints(filter2);
+      var res2 = await TimeSeriesAPI(client).getDatapoints(filter2);
       res.addDatapoints(res2, removeDuplicates: true);
       expect(res.layer().length, 49,
           reason: '49 datapoints expected from last layer');

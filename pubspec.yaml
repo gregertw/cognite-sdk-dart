@@ -1,4 +1,4 @@
-name: cognite_dart_sdk
+name: cognite_cdf_sdk
 description: API client for Cognite CDF
 homepage: homepage
 # The following defines the version and build number for your application.
@@ -7,7 +7,7 @@ homepage: homepage
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 1.0.0+1
+version: 0.1.2+dev
 
 environment:
   sdk: ">=2.2.2 <3.0.0"

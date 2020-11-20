@@ -1,4 +1,4 @@
-# cognite_dart_sdk
+# cognite_cdf_sdk
 
 A Dart package with a simple SDK for Cognite CDF API.
 
