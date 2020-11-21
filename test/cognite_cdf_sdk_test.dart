@@ -1,35 +1,17 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
 import 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
-import 'package:mockito/mockito.dart';
-import 'package:dio/adapter.dart';
-import 'package:dio/dio.dart';
-
-class DioAdapterMock extends Mock implements DefaultHttpClientAdapter {}
-
-const dioHttpHeadersForResponseBody = {
-  Headers.contentTypeHeader: [Headers.jsonContentType],
-};
 
 void main() {
-  DioAdapterMock dioAdapterMock;
-  CDFApiClient client;
+  CDFMockApiClient client;
 
   setUpAll(() {
-    dioAdapterMock = DioAdapterMock();
-    client = CDFApiClient(
-        project: 'a_project',
-        apikey: 'something',
-        baseUrl: 'https://api.cognitedata.com',
-        logLevel: Level.warning,
-        httpAdapter: dioAdapterMock);
+    client = CDFMockApiClient();
   });
 
   group('login', () {
     test('should return user info if logged in', () async {
-      final httpResponse = ResponseBody.fromString(
-        """{
+      client.setMock(body: """{
     "data": {
         "user": "user@cognite.com",
         "loggedIn": true,
@@ -37,12 +19,7 @@ void main() {
         "projectId": 5977964818434649,
         "apiKeyId": 934347347677
     }
-}""",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+}""");
       var res = await client.getStatus();
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.user, "user@cognite.com");
@@ -55,21 +32,14 @@ void main() {
 
   group('login failed', () {
     test('should fail login status', () async {
-      final httpResponse = ResponseBody.fromString(
-        "",
-        403,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+      client.setMock(statusCode: 403);
       var res = await client.getStatus();
       expect(res, isNull, reason: 'Null response is expected');
     });
   });
   group('retrieve timeseries', () {
     test('should return a list of time series', () async {
-      final httpResponse = ResponseBody.fromString(
-        """{
+      client.setMock(body: """{
   "items": [
     {
       "id": 29107693408255,
@@ -92,12 +62,7 @@ void main() {
       "isStep": false
     }
   ]
-}""",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+}""");
       var res = await TimeSeriesAPI(client).getAllTimeSeries();
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.length, 2, reason: 'Two timeseries entries');
@@ -113,13 +78,7 @@ void main() {
 
   group('retrieve timeseries datapoints', () {
     test('should return null datapoints', () async {
-      final httpResponse = ResponseBody.fromString(
-        "",
-        404,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+      client.setMock(statusCode: 404);
       DatapointsFilterModel filter = DatapointsFilterModel();
       filter.externalId = 'ts_doesnotexist';
       filter.end = DateTime.now().millisecondsSinceEpoch;
@@ -132,13 +91,7 @@ void main() {
     test('should return a list of datapoints', () async {
       var file = File(Directory.current.path + '/test/response-1.json');
 
-      final httpResponse = ResponseBody.fromString(
-        "${await (file.readAsString())}",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+      client.setMock(body: "${await (file.readAsString())}");
       DatapointsFilterModel filter = DatapointsFilterModel();
       filter.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
       filter.end = DateTime.now().millisecondsSinceEpoch;
@@ -155,13 +108,7 @@ void main() {
     test('should return a longer list of datapoints', () async {
       var file = File(Directory.current.path + '/test/response-2.json');
 
-      final httpResponse = ResponseBody.fromString(
-        "${await (file.readAsString())}",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+      client.setMock(body: "${await (file.readAsString())}");
       DatapointsFilterModel filter = DatapointsFilterModel();
       filter.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
       filter.end = DateTime.now().millisecondsSinceEpoch;
@@ -185,20 +132,7 @@ void main() {
 
     test('should return two layers of datapoints', () async {
       var file = File(Directory.current.path + '/test/response-1.json');
-      var file2 = File(Directory.current.path + '/test/response-2.json');
-
-      final httpResponse = ResponseBody.fromString(
-        "${await (file.readAsString())}",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      final httpResponse2 = ResponseBody.fromString(
-        "${await (file2.readAsString())}",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+      client.setMock(body: "${await (file.readAsString())}");
       DatapointsFilterModel filter = DatapointsFilterModel();
       filter.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
       filter.end = DateTime.now().millisecondsSinceEpoch;
@@ -208,8 +142,8 @@ void main() {
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res.layer(layer: 1).length, 6,
           reason: '6 datapoints expected in first layer');
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse2);
+      var file2 = File(Directory.current.path + '/test/response-2.json');
+      client.setMock(body: "${await (file2.readAsString())}");
       DatapointsFilterModel filter2 = DatapointsFilterModel();
       filter2.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
       filter2.end = DateTime.now().millisecondsSinceEpoch;
@@ -232,20 +166,7 @@ void main() {
     test('should return two layers of datapoints with duplicates removed',
         () async {
       var file = File(Directory.current.path + '/test/response-1.json');
-      var file2 = File(Directory.current.path + '/test/response-2.json');
-
-      final httpResponse = ResponseBody.fromString(
-        "${await (file.readAsString())}",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      final httpResponse2 = ResponseBody.fromString(
-        "${await (file2.readAsString())}",
-        200,
-        headers: dioHttpHeadersForResponseBody,
-      );
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse);
+      client.setMock(body: "${await (file.readAsString())}");
       DatapointsFilterModel filter = DatapointsFilterModel();
       filter.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
       filter.end = DateTime.now().millisecondsSinceEpoch;
@@ -255,8 +176,8 @@ void main() {
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(res.layer(layer: 1).length, 6,
           reason: '6 datapoints expected in first layer');
-      when(dioAdapterMock.fetch(any, any, any))
-          .thenAnswer((_) async => httpResponse2);
+      var file2 = File(Directory.current.path + '/test/response-2.json');
+      client.setMock(body: "${await (file2.readAsString())}");
       DatapointsFilterModel filter2 = DatapointsFilterModel();
       filter2.externalId = 'ts_c2009283ac84526e9f0e01ef4cc9fa2a';
       filter2.end = DateTime.now().millisecondsSinceEpoch;
