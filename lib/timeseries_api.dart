@@ -1,9 +1,17 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
+/// This API covers the timeseries API.
+/// 
+/// https://docs.cognite.com/api/v1/#tag/Time-series
 class TimeSeriesAPI {
   CDFApiClient client;
   TimeSeriesAPI(this.client);
 
+  /// Returns the first 100 (default) timeseries or null.
+  /// 
+  /// As no query parameters or paging is supported, it is mostly 
+  /// for demonstration purposes. 
+  /// https://docs.cognite.com/api/v1/#operation/getTimeSeries
   Future<List<TimeSeriesModel>> getAllTimeSeries() async {
     Response res;
     try {
@@ -14,12 +22,16 @@ class TimeSeriesAPI {
     if (res.statusCode >= 200 && res.statusCode <= 299) {
       return TimeSeriesModel.listFromJson(res.data['items'] ?? null);
     }
-    _log.w('getStatus() returned non-2xx response code');
+    _log.w('getAllTimeSeries() returned non-2xx response code');
     return null;
   }
 
-  Future<DatapointsModel> getDatapoints(DatapointsFilterModel filter,
-      {int layer: 0}) async {
+  /// Needs a [DatapointsFilterModel] to retrieve either aggregates or raw datapoints.
+  /// 
+  /// This API endpoint does not support paging, so max 10,000 aggregated or
+  /// 100,000 raw datapoints can be retrieved at the time.
+  /// https://docs.cognite.com/api/v1/#operation/getMultiTimeSeriesDatapoints
+  Future<DatapointsModel> getDatapoints(DatapointsFilterModel filter) async {
     Response res;
     try {
       Map data = {
@@ -34,7 +46,7 @@ class TimeSeriesAPI {
       dp.fromJson(res.data['items'][0]);
       return dp;
     }
-    _log.w('getStatus() returned non-2xx response code');
+    _log.w('getDatapoints() returned non-2xx response code');
     return null;
   }
 }

@@ -1,24 +1,34 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
+/// Represents the datapoints of a timeseries.
 class DatapointsModel {
-  /* A server-generated ID for the object. */
+  /// A server-generated ID for the object.
   int id;
-  /* The externally supplied ID for the time series. */
+
+  /// The externally supplied ID for the time series.
   String externalId;
-  /* Whether the time series is string valued or not. */
+
+  /// Whether the time series is string valued or not.
   bool isString;
-  /* The physical unit of the time series. */
+
+  /// The physical unit of the time series.
   String unit;
-  /* Whether the time series is a step series or not. */
+
+  /// Whether the time series is a step series or not.
   bool isStep;
-  /* Number of layers we have */
+
+  /// Number of layers we have
   int layers = 0;
 
   List<DatapointModel> _datapoints = [];
+
+  /// Always the number of datapoints in total across layers.
   get datapointsLength => _datapoints.length;
 
+  /// The full list of [DatapointModel] with all layers.
   get datapoints => _datapoints;
 
+  /// Used to retrieve a given layer (default last added).
   List<DatapointModel> layer({int layer}) {
     // Return only last layer if no layer specified
     if (layer == null) {
@@ -38,6 +48,7 @@ class DatapointsModel {
     return 'DatapointsModel[id=$id, externalId=$externalId, isString=$isString, unit=$unit, isStep=$isStep, datapoints=$_datapoints ]';
   }
 
+  /// Used to assign all unassigned datapoints to a new layer.
   void pushLayer() {
     layers += 1;
     _datapoints.forEach((element) {
@@ -47,6 +58,7 @@ class DatapointsModel {
     });
   }
 
+  /// Delete all datapoints on the last layer.
   void popLayer() {
     if (layers == 0) {
       return;
@@ -60,12 +72,17 @@ class DatapointsModel {
     layers -= 1;
   }
 
+  /// Clear all datapoints for layer information. Used by [addDatapoints].
   void clearLayers() {
     _datapoints.forEach((element) {
       element.layer = -1;
     });
   }
 
+  /// Takes another [DatapointsModel] dp and adds all its datapoints as a new layer.
+  ///
+  /// [removeDuplicates] is default false and if true, same timestamp datapoints
+  /// will be deleted.
   void addDatapoints(DatapointsModel dp, {removeDuplicates: false}) {
     dp.clearLayers();
     _datapoints.addAll(dp._datapoints);

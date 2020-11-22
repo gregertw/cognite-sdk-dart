@@ -1,15 +1,40 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
+/// Used to create filter for [TimeSeriesAPI.getDatapoints].
+///
+/// Does not support querying for multiple timeseries per request.
+/// Instead of using granularity and limit, use [resolution()] as it
+/// will automatically calculate granularity and limit based on the granularity
+/// in seconds.
 class DatapointsFilterModel {
+  /// Get datapoints starting from, and including, this time.
   int _start = 0;
+
+  /// Get datapoints up to, but excluding, this point in time.
   int _end = 0;
+
+  /// Return up to this number of datapoints.
+  ///
+  /// Maximum is 100000 non-aggregated data points and 10000 aggregated data points.
   int limit;
+
+  /// Specify the aggregates to return, or an empty array if this sub-query should return datapoints without aggregation.
+  ///
+  /// "average" "max" "min" "count" "sum" "interpolation" "stepInterpolation"
+  /// "totalVariation" "continuousVariance" "discreteVariance"
   List<String> aggregates = const [];
   int _resolution;
+
+  /// The time granularity size and unit to aggregate over.
   String granularity;
+
+  /// Whether to include the last datapoint before the requested time period, and the first one after.
   bool includeOutsidePoints;
+
+  /// ExternalId of timeseries to retrieve.
   String externalId;
 
+  /// The resolution in seconds (i.e. time between each datapoint).
   get resolution => _resolution;
   set start(int i) {
     if (i <= 0) {
@@ -31,6 +56,7 @@ class DatapointsFilterModel {
     }
   }
 
+  /// Given seconds [r] of time between each datapoint desired, set granularity and limit.
   set resolution(int r) {
     if (r >= 60 * 60 * 24) {
       // Days
@@ -60,6 +86,7 @@ class DatapointsFilterModel {
     return 'DatapointsFilterModel[ externalId=$externalId, start=$_start, end=$_end, aggregates=$aggregates, resolution=$_resolution, granularity=$granularity, limit=$limit, includeOutsidePoints=$includeOutsidePoints ]';
   }
 
+  /// Will calculate the limit to request based on range and resolution set.
   calculateLimit() {
     if (_start > 0 && _end > 0) {
       limit = ((_end - _start) / (1000 * _resolution)).round();

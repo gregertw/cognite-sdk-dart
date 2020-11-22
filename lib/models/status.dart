@@ -1,5 +1,6 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
+/// Returned data from [CDFApiClient.getStatus].
 class StatusModel {
   String user;
   bool loggedIn;

@@ -95,7 +95,11 @@ class CDFApiClient {
     _dio.options.baseUrl = this._apiUrl;
     _dio.interceptors.add(_CustomInterceptor(apikey, _history));
     _dio.options.receiveTimeout = 15000;
-    _log = Logger(level: logLevel, printer: _MyLogPrinter(), output: null);
+    _log = Logger(
+        level: logLevel,
+        // Use _MyLogPrinter if you want to force logging also in release mode.
+        // printer: _MyLogPrinter(),
+        output: null);
     _dio.interceptors.add(_CustomLogInterceptor(log: _log));
   }
 

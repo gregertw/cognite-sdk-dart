@@ -1,5 +1,6 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
+/// Used to decode json and inject api-key header.
 class _CustomInterceptor extends Interceptor {
   String apikey;
   List<dynamic> history;
@@ -29,6 +30,7 @@ class _CustomInterceptor extends Interceptor {
   }
 }
 
+/// Used if you want to ensure that logging happens in any app mode.
 class _MyLogPrinter extends LogPrinter {
   @override
   List<String> log(LogEvent event) {

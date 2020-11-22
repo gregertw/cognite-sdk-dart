@@ -1,40 +1,58 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
+/// Each datapoint or aggregate is represented by [DatapointModel]
+///
+/// Note that each datatpoint supports layering using [layer] with first layer
+/// as 0.
 class DatapointModel {
-  /* 
-    The number of milliseconds since 00:00:00 Thursday, 1 January 1970, 
-    Coordinated Universal Time (UTC), minus leap seconds.
-  */
+  /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970,
+  ///  Coordinated Universal Time (UTC), minus leap seconds.
+
   int timestamp;
-  // timestamp in DateTime object
+
+  /// timestamp in DateTime object
   DateTime datetime;
-  // Numeric value of a data point
+
+  /// Numeric value of a data point
   double value;
-  // String value of a data point
+
+  /// String value of a data point
   String strValue;
-  // The integral average value in the aggregate period.
+
+  /// The integral average value in the aggregate period.
   double average;
-  // The maximum value in the aggregate period.
+
+  /// The maximum value in the aggregate period.
   double max;
-  // The minimum value in the aggregate period.
+
+  /// The minimum value in the aggregate period.
   double min;
-  // The number of datapoints in the aggregate period.
+
+  /// The number of datapoints in the aggregate period.
   int count;
-  // The sum of the datapoints in the aggregate period.
+
+  /// The sum of the datapoints in the aggregate period.
   double sum;
-  // The interpolated value of the series in the beginning of the aggregate.
+
+  /// The interpolated value of the series in the beginning of the aggregate.
   double interpolation;
-  // The last value before or at the beginning of the aggregate.
+
+  /// The last value before or at the beginning of the aggregate.
   double stepInterpolation;
-  // The variance of the interpolated underlying function.
+
+  /// The variance of the interpolated underlying function.
   double continuousVariance;
-  // The variance of the datapoint values.
+
+  /// The variance of the datapoint values.
   double discreteVariance;
-  // The total variation of the interpolated underlying function.
+
+  /// The total variation of the interpolated underlying function.
   double totalVariance;
-  /* As we load at deeper zoom levels, we can set the layer id with 0 as first */
+
+  /// As we load at deeper zoom levels, we can set the layer id with 0 as first
   int layer = -1;
 
+  /// Get the timestamp in local timezone
   get localDateTime => datetime.toLocal();
 
   @override
