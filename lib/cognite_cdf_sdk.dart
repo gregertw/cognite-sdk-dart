@@ -98,7 +98,8 @@ class CDFApiClient {
     _log = Logger(
         level: logLevel,
         // Use _MyLogPrinter if you want to force logging also in release mode.
-        // printer: _MyLogPrinter(),
+        // It also gets rid of the extra formatting.
+        printer: _MyLogPrinter(),
         output: null);
     _dio.interceptors.add(_CustomLogInterceptor(log: _log));
   }

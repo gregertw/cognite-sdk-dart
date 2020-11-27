@@ -75,6 +75,13 @@ class _CustomLogInterceptor extends Interceptor {
   @override
   Future onError(DioError err) async {
     if (err.response.statusCode >= 400 && err.response.statusCode <= 499) {
+      log.w('*** DioError ***:');
+      log.w('uri: ${err.request.uri}');
+      log.w('$err');
+      if (err.response != null) {
+        _printResponse(err.response, Level.warning);
+      }
+      log.w('');
       return err;
     }
     log.e('*** DioError ***:');

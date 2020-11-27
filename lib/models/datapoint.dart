@@ -49,7 +49,7 @@ class DatapointModel {
   /// The total variation of the interpolated underlying function.
   double totalVariance;
 
-  /// As we load at deeper zoom levels, we can set the layer id with 0 as first
+  /// Not set = -1
   int layer = -1;
 
   /// Get the timestamp in local timezone
