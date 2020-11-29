@@ -1,13 +1,9 @@
 name: cognite_cdf_sdk
-description: API client for Cognite CDF
+description: >-
+  Read-only SDK for Cognite Data Fusion (CDF) (https://docs.cognite.com/dev/).
+  This SDK is a community project.
 homepage: https://github.com/gregertw/cognite-sdk-dart
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# Read more about versioning at semver.org.
-version: 0.1.2+dev
+version: 0.1.2-dev.3
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -15,8 +11,8 @@ environment:
 dependencies:
   dio: ^3.0.10
   logger: ^0.9.4
+  mockito: ^4.1.3 
 
 dev_dependencies:
-  mockito: ^4.1.3 
   flutter_test:
     sdk: flutter

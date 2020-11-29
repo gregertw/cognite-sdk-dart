@@ -1,5 +1,7 @@
 # cognite_cdf_sdk
 
+**Maintainer**: Greger Wedel, https://github.com/gregertw
+
 A Dart package with a simple SDK for Cognite CDF API, https://docs.cognite.com/dev/.
 
 This SDK has been developed specifically for the needs of a Flutter application for
