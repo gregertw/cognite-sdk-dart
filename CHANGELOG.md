@@ -2,6 +2,12 @@
 
 ## Nov 29, 2020
 
+* Publish 0.1.2-dev.4
+* Add example 
+* BREAKING: Fix issue with dio dependency on dart:io, httpAdapter is now required
+
+## Nov 29, 2020
+
 * Initial publishing of 0.1.2-dev.3 in preperation for release of 0.1.2
 
 ## Nov 22, 2020

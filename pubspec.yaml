@@ -3,7 +3,7 @@ description: >-
   Read-only SDK for Cognite Data Fusion (CDF) (https://docs.cognite.com/dev/).
   This SDK is a community project.
 homepage: https://github.com/gregertw/cognite-sdk-dart
-version: 0.1.2-dev.3
+version: 0.1.2-dev.4
 
 environment:
   sdk: ">=2.2.2 <3.0.0"

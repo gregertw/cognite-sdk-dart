@@ -4,12 +4,17 @@
 /// The current version is primarily targeted towards read-only data exploration
 /// type of Flutter apps.
 ///
+/// NOTE!!! You need to supply an [HttpClientAdapter()] implementation as either found
+/// in dio/adapter.dart ([DefaultHttpClientAdapter()]) or dio/adapter_browser.dart
+/// ([BrowserHttpClientAdapter()]).
+///
 /// Instantiate a client to be used by the APIs, e.g. [TimeSeriesAPI]:
 /// ```
 /// var apiClient = CDFApiClient(
 ///            project: 'project_name',
 ///            apikey: 'myapi_key',
-///            baseUrl: 'https://api.cognitedata.com/')
+///            baseUrl: 'https://api.cognitedata.com/',
+///            httpAdapter: DefaultHttpClientAdapter())
 /// ```
 /// As an alternative for testing, you can use [CDFMockApiClient] that allows
 /// you to use setMock() to specify the reponse.
@@ -35,7 +40,6 @@
 library cognite_cdf_sdk;
 
 import 'dart:async';
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
@@ -71,7 +75,7 @@ class CDFApiClient {
   Level logLevel;
   String _apiUrl;
   var _dio = Dio();
-  DefaultHttpClientAdapter httpAdapter = DefaultHttpClientAdapter();
+  HttpClientAdapter httpAdapter;
 
   /// getter to allow direct access to dio() instance from API classes.
   get http => _dio;
@@ -91,6 +95,8 @@ class CDFApiClient {
     _history = List<dynamic>();
     if (this.httpAdapter != null) {
       _dio.httpClientAdapter = httpAdapter;
+    } else {
+      throw CDFApiClientHttpAdapterException();
     }
     _dio.options.baseUrl = this._apiUrl;
     _dio.interceptors.add(_CustomInterceptor(apikey, _history));

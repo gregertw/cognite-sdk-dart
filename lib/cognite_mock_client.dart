@@ -1,6 +1,6 @@
 part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
-class _DioAdapterMock extends Mock implements DefaultHttpClientAdapter {}
+class _DioAdapterMock extends Mock implements HttpClientAdapter {}
 
 /// Use the CDFMockApiClient as a replacement for CDFApiClient to mock http responses.
 class CDFMockApiClient extends CDFApiClient {
@@ -9,7 +9,7 @@ class CDFMockApiClient extends CDFApiClient {
   /// All parameters except logLevel are preset in the mock.
   ///
   /// If you don't supply a [logLevel], you only get warnings and errors.
-  CDFMockApiClient({logLevel: Level.warning})
+  CDFMockApiClient({logLevel: Level.error})
       : super(
             project: 'a_project',
             apikey: 'key',

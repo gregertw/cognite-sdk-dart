@@ -29,11 +29,24 @@ bugs or feature suggestions, or even better: submit a PR!
 
 Instantiate an http client and off you go!
 
-```
-var apiClient = CDFApiClient(
-           project: 'project_name',
-           apikey: 'myapi_key',
-           baseUrl: 'https://api.cognitedata.com/')
+NOTE!!! You need to supply an HttpClientAdapter() implementation as either found
+in dio/adapter.dart (DefaultHttpClientAdapter()) or dio/adapter_browser.dart
+(BrowserHttpClientAdapter()).
 
-var res = await TimeSeriesAPI(apiClient).getAllTimeSeries();
+```
+import 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
+import 'package:dio/adapter.dart';
+
+main() async {
+  var apiClient = CDFApiClient(
+      project: 'project_name',
+      apikey: 'myapi_key',
+      baseUrl: 'https://api.cognitedata.com/',
+      httpAdapter: DefaultHttpClientAdapter());
+
+  var res = await TimeSeriesAPI(apiClient).getAllTimeSeries();
+  if (res != null && res.length >= 1) {
+    print(res[0].externalId);
+  }
+}
 ```
