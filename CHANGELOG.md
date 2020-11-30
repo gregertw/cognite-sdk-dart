@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## Nov 30, 2020
+
+* Publish 0.1.2
 ## Nov 29, 2020
 
 * Publish 0.1.2-dev.4
