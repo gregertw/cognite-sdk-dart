@@ -3,29 +3,64 @@ part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 /// Used to decode json and inject api-key header.
 class _CustomInterceptor extends Interceptor {
   String apikey;
-  List<dynamic> history;
+  List<HistoryModel> history;
 
   @override
   _CustomInterceptor(this.apikey, this.history);
 
   @override
   Future onRequest(RequestOptions options) async {
+    String path;
+    String baseUrl;
+    // Add a unique request id to match up request/response
+    int id = Random().nextInt(4294967295);
+    options.extra.addAll({'request_id': id});
+    // path may be the full url
+    if (options.baseUrl != null && options.baseUrl.isNotEmpty) {
+      baseUrl = options.baseUrl;
+    }
+    if (options.path != null && options.path.isNotEmpty) {
+      path = options.path;
+      if (path.startsWith('http')) {
+        baseUrl = null;
+      }
+    }
+    history.add(HistoryModel(
+        baseUrl: baseUrl,
+        path: path,
+        method: options.method,
+        id: id,
+        request: options.data));
     options.headers['api-key'] = this.apikey;
-    options.responseType = ResponseType.plain;
+    options.responseType = ResponseType.json;
     return options;
   }
 
   @override
   Future onResponse(Response response) async {
-    if (response.data is String) {
-      response.data = jsonDecode(response.data);
+    var iter = history.reversed.iterator;
+    while (iter.moveNext()) {
+      if (iter.current.id == response.request.extra['request_id']) {
+        iter.current.response = response.data;
+        iter.current.statusCode = response.statusCode;
+        iter.current.statusMessage = response.statusMessage;
+        iter.current.timestampEnd = DateTime.now().millisecondsSinceEpoch;
+        break;
+      }
     }
-    history.add(response);
     return response;
   }
 
   @override
   Future onError(DioError err) async {
+    var iter = history.reversed.iterator;
+    while (iter.moveNext()) {
+      if (iter.current.id == err.request.extra['request_id']) {
+        iter.current.statusCode = err.response.statusCode;
+        iter.current.statusMessage = err.message;
+        break;
+      }
+    }
     return err;
   }
 }

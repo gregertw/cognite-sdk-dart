@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Dec 3, 2020
+
+* Publish 0.1.3
+* BREAKING: Add a proper HistoryModel to access client.history (instead of Dio's Response).
 ## Nov 30, 2020
 
 * Publish 0.1.2

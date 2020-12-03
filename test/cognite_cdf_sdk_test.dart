@@ -21,6 +21,8 @@ void main() {
     }
 }""");
       var res = await client.getStatus();
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.user, "user@cognite.com");
       expect(res.loggedIn, true);
@@ -34,6 +36,8 @@ void main() {
     test('should fail login status', () async {
       client.setMock(statusCode: 403);
       var res = await client.getStatus();
+      expect(client.history[client.history.length - 1].statusCode, 403,
+          reason: 'Correct error code');
       expect(res, isNull, reason: 'Null response is expected');
     });
   });
@@ -64,6 +68,8 @@ void main() {
   ]
 }""");
       var res = await TimeSeriesAPI(client).getAllTimeSeries();
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.length, 2, reason: 'Two timeseries entries');
       expect(res[0].id, 29107693408255);
@@ -86,6 +92,8 @@ void main() {
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
+      expect(client.history[client.history.length - 1].statusCode, 404,
+          reason: 'Correct error code');
       expect(res, isNull, reason: 'Response is not expected');
     });
     test('should return a list of datapoints', () async {
@@ -99,6 +107,8 @@ void main() {
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.datapointsLength, 6, reason: '6 datapoints expected');
       expect(res.datapoints[0].timestamp, 1605422100000);
@@ -116,6 +126,8 @@ void main() {
       filter.resolution = 60;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       expect(res, isNotNull, reason: 'Response is expected');
       expect(res.datapointsLength, 53, reason: '53 datapoints expected');
       expect(res.datapoints[0].timestamp, 1605422100000);
@@ -140,6 +152,8 @@ void main() {
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       expect(res.layer(layer: 1).length, 6,
           reason: '6 datapoints expected in first layer');
       var file2 = File(Directory.current.path + '/test/response-2.json');
@@ -151,6 +165,8 @@ void main() {
       filter2.resolution = 60;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res2 = await TimeSeriesAPI(client).getDatapoints(filter2);
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       res.addDatapoints(res2);
       expect(res.layer().length, 53,
           reason: '53 datapoints expected from last layer');
@@ -174,6 +190,8 @@ void main() {
       filter.resolution = 600;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       expect(res.layer(layer: 1).length, 6,
           reason: '6 datapoints expected in first layer');
       var file2 = File(Directory.current.path + '/test/response-2.json');
@@ -185,6 +203,8 @@ void main() {
       filter2.resolution = 60;
       filter.aggregates = ['min', 'max', 'average', 'count'];
       var res2 = await TimeSeriesAPI(client).getDatapoints(filter2);
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
       res.addDatapoints(res2, removeDuplicates: true);
       expect(res.layer().length, 49,
           reason: '49 datapoints expected from last layer');

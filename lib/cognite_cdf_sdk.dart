@@ -24,6 +24,9 @@
 /// var res = await TimeSeriesAPI(apiClient).getAllTimeSeries();
 /// ```
 ///
+/// After this, you will have as List<> of [HistoryModel]'s available to you in
+/// `apiClient.history` to access the request and reponse history of the client.
+///
 /// The library uses the logger package to allow logging at different levels.
 /// Choose the log level with the logLevel parameter to [CDFApiClient].
 ///
@@ -40,6 +43,7 @@
 library cognite_cdf_sdk;
 
 import 'dart:async';
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
@@ -54,9 +58,10 @@ part 'models/timeseries.dart';
 part 'models/datapoint.dart';
 part 'models/datapoints.dart';
 part 'models/datapoints_filter.dart';
+part 'models/history.dart';
 
 Logger _log;
-List<dynamic> _history;
+List<HistoryModel> _history;
 
 /// Main API client class to set up and hold a CDF API connection.
 ///
@@ -82,8 +87,7 @@ class CDFApiClient {
 
   /// access to full history of requests and responses.
   ///
-  /// Use the dio Dart package and the [Response] class to access the List<Response>.
-  get history => _history;
+  List<HistoryModel> get history => _history;
 
   CDFApiClient(
       {this.project,
@@ -92,7 +96,7 @@ class CDFApiClient {
       this.logLevel = Level.warning,
       this.httpAdapter}) {
     this._apiUrl = this.baseUrl + '/api/v1/projects/' + this.project;
-    _history = List<dynamic>();
+    _history = List<HistoryModel>();
     if (this.httpAdapter != null) {
       _dio.httpClientAdapter = httpAdapter;
     } else {
