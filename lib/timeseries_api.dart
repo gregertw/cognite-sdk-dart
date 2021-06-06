@@ -4,7 +4,7 @@ part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 ///
 /// https://docs.cognite.com/api/v1/#tag/Time-series
 class TimeSeriesAPI {
-  CDFApiClient client;
+  CDFApiClient? client;
   TimeSeriesAPI(this.client);
 
   /// Returns the first 100 (default) timeseries or null.
@@ -12,17 +12,17 @@ class TimeSeriesAPI {
   /// As no query parameters or paging is supported, it is mostly
   /// for demonstration purposes.
   /// https://docs.cognite.com/api/v1/#operation/getTimeSeries
-  Future<List<TimeSeriesModel>> getAllTimeSeries() async {
-    Response res;
+  Future<List<TimeSeriesModel>?> getAllTimeSeries() async {
+    Response? res;
     try {
-      res = await client.http.get('/timeseries');
+      res = await client!.http.get('/timeseries');
     } on DioError {
       return null;
     }
-    if (res.statusCode >= 200 && res.statusCode <= 299) {
+    if (res!.statusCode! >= 200 && res.statusCode! <= 299) {
       return TimeSeriesModel.listFromJson(res.data['items'] ?? null);
     }
-    _log.w('getAllTimeSeries() returned non-2xx response code');
+    _log!.w('getAllTimeSeries() returned non-2xx response code');
     return null;
   }
 
@@ -35,7 +35,7 @@ class TimeSeriesAPI {
   /// raw datapoints.
   Future<DatapointsModel> getDatapoints(DatapointsFilterModel filter,
       {raw: false}) async {
-    Response res;
+    Response? res;
     var f = filter.toJson();
     if (raw) {
       f.remove('aggregates');
@@ -44,16 +44,16 @@ class TimeSeriesAPI {
       Map data = {
         'items': [f]
       };
-      res = await client.http.post('/timeseries/data/list', data: data);
+      res = await client!.http.post('/timeseries/data/list', data: data);
     } on DioError {
-      return null;
+      return DatapointsModel();
     }
-    if (res.statusCode >= 200 && res.statusCode <= 299) {
+    if (res!.statusCode! >= 200 && res.statusCode! <= 299) {
       DatapointsModel dp = DatapointsModel();
       dp.fromJson(res.data['items'][0]);
       return dp;
     }
-    _log.w('getDatapoints() returned non-2xx response code');
-    return null;
+    _log!.w('getDatapoints() returned non-2xx response code');
+    return DatapointsModel();
   }
 }

@@ -44,6 +44,7 @@ library cognite_cdf_sdk;
 
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
@@ -60,8 +61,8 @@ part 'models/datapoints.dart';
 part 'models/datapoints_filter.dart';
 part 'models/history.dart';
 
-Logger _log;
-List<HistoryModel> _history;
+Logger? _log;
+List<HistoryModel>? _history;
 
 /// Main API client class to set up and hold a CDF API connection.
 ///
@@ -71,23 +72,23 @@ class CDFApiClient {
   String baseUrl;
 
   /// [project] must be set to the CDF project to access.
-  String project;
+  String? project;
 
   /// [apikey] must be set with a CDF key that allows proper access.
-  String apikey;
+  String? apikey;
 
   /// Import logger package to use Level.* and set log level.
   Level logLevel;
-  String _apiUrl;
+  String? _apiUrl;
   var _dio = Dio();
-  HttpClientAdapter httpAdapter;
+  HttpClientAdapter? httpAdapter;
 
   /// getter to allow direct access to dio() instance from API classes.
   get http => _dio;
 
   /// access to full history of requests and responses.
   ///
-  List<HistoryModel> get history => _history;
+  List<HistoryModel>? get history => _history;
 
   CDFApiClient(
       {this.project,
@@ -95,14 +96,14 @@ class CDFApiClient {
       this.baseUrl = 'https://api.cognitedata.com',
       this.logLevel = Level.warning,
       this.httpAdapter}) {
-    this._apiUrl = this.baseUrl + '/api/v1/projects/' + this.project;
-    _history = List<HistoryModel>();
+    this._apiUrl = this.baseUrl + '/api/v1/projects/' + this.project!;
+    _history = [];
     if (this.httpAdapter != null) {
-      _dio.httpClientAdapter = httpAdapter;
+      _dio.httpClientAdapter = httpAdapter!;
     } else {
       throw CDFApiClientHttpAdapterException();
     }
-    _dio.options.baseUrl = this._apiUrl;
+    _dio.options.baseUrl = this._apiUrl!;
     _dio.interceptors.add(_CustomInterceptor(apikey, _history));
     _dio.options.receiveTimeout = 15000;
     _log = Logger(
@@ -115,20 +116,20 @@ class CDFApiClient {
   }
 
   /// Used to test against CDF's /login/status to verify access. Returns null on failure.
-  Future<StatusModel> getStatus() async {
+  Future<StatusModel?> getStatus() async {
     Response res;
     try {
       res = await _dio.get(baseUrl + '/login/status');
     } on DioError {
       return null;
     }
-    if (res.statusCode >= 200 &&
-        res.statusCode <= 299 &&
+    if (res.statusCode! >= 200 &&
+        res.statusCode! <= 299 &&
         res.data is Map &&
         res.data.containsKey('data')) {
       return StatusModel.fromJson(res.data['data']);
     }
-    _log.w('getStatus() returned non-2xx response code');
+    _log!.w('getStatus() returned non-2xx response code');
     return null;
   }
 }

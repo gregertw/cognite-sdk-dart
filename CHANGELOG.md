@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Jun 6, 2021
+
+* Migrate to null safety
+* BREAKING: getDatapoints() now returns an empty DatapointModel instead of null
+* Release preview at 0.2.0-nullsafety
+
 ## Dec 3, 2020
 
 * Publish 0.1.3

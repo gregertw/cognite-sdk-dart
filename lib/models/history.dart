@@ -3,34 +3,34 @@ part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 /// Keeps each request/response as part of client .history.
 class HistoryModel {
   /// Base url
-  String baseUrl;
+  String? baseUrl;
 
   /// Method
-  String method;
+  String? method;
 
   /// Path component of URL
-  String path;
+  String? path;
 
   /// Request body
-  Map request;
+  Map? request;
 
   /// Response body
-  Map response;
+  Map? response;
 
   /// Response code
-  int statusCode;
+  int? statusCode;
 
   /// Response message
-  String statusMessage;
+  String? statusMessage;
 
   /// Internal request id
-  int id;
+  int? id;
 
   /// Request timestamp on send
-  int timestampStart;
+  int? timestampStart;
 
   /// Response timestamp on receive
-  int timestampEnd;
+  int? timestampEnd;
 
   HistoryModel(
       {this.baseUrl,
