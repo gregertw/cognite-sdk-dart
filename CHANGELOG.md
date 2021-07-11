@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Jul 11, 2021
+
+* Add support for additional client param token to support standard bearer token  (OpenID Connect)
+* Clean up null safety to avoid having null variables (history and client)
+* Release updated preview at 0.2.0-nullsafety.1
+
 ## Jun 6, 2021
 
 * Migrate to null safety

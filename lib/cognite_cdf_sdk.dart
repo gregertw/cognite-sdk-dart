@@ -61,8 +61,8 @@ part 'models/datapoints.dart';
 part 'models/datapoints_filter.dart';
 part 'models/history.dart';
 
-Logger? _log;
-List<HistoryModel>? _history;
+Logger _log = Logger();
+List<HistoryModel> _history = [];
 
 /// Main API client class to set up and hold a CDF API connection.
 ///
@@ -77,6 +77,9 @@ class CDFApiClient {
   /// [apikey] must be set with a CDF key that allows proper access.
   String? apikey;
 
+  /// [token] is a bearer token. If set, apikey is ignored.
+  String? token;
+
   /// Import logger package to use Level.* and set log level.
   Level logLevel;
   String? _apiUrl;
@@ -88,10 +91,19 @@ class CDFApiClient {
 
   /// access to full history of requests and responses.
   ///
-  List<HistoryModel>? get history => _history;
+  List<HistoryModel> get history => _history;
+
+  updateToken(String? token) {
+    if (token?.length == 0) {
+      this.token = null;
+    } else {
+      this.token = token;
+    }
+  }
 
   CDFApiClient(
       {this.project,
+      this.token,
       this.apikey,
       this.baseUrl = 'https://api.cognitedata.com',
       this.logLevel = Level.warning,
@@ -103,8 +115,14 @@ class CDFApiClient {
     } else {
       throw CDFApiClientHttpAdapterException();
     }
+    if (this.apikey?.length == 0) {
+      this.apikey = null;
+    }
+    if (this.token?.length == 0) {
+      this.token = null;
+    }
     _dio.options.baseUrl = this._apiUrl!;
-    _dio.interceptors.add(_CustomInterceptor(apikey, _history));
+    _dio.interceptors.add(_CustomInterceptor(apikey, token, _history));
     _dio.options.receiveTimeout = 15000;
     _log = Logger(
         level: logLevel,
@@ -115,21 +133,31 @@ class CDFApiClient {
     _dio.interceptors.add(_CustomLogInterceptor(log: _log));
   }
 
-  /// Used to test against CDF's /login/status to verify access. Returns null on failure.
-  Future<StatusModel?> getStatus() async {
+  /// Used to test against CDF to verify access. Returns empty StatusModel() on failure.
+  Future<StatusModel> getStatus() async {
     Response res;
-    try {
-      res = await _dio.get(baseUrl + '/login/status');
-    } on DioError {
-      return null;
+    if (token == null) {
+      try {
+        res = await _dio.get(baseUrl + '/login/status');
+      } on DioError {
+        return StatusModel();
+      }
+    } else {
+      try {
+        res = await _dio.get(baseUrl + '/api/v1/token/inspect');
+      } on DioError {
+        return StatusModel();
+      }
     }
-    if (res.statusCode! >= 200 &&
-        res.statusCode! <= 299 &&
-        res.data is Map &&
-        res.data.containsKey('data')) {
-      return StatusModel.fromJson(res.data['data']);
+
+    if (res.statusCode! >= 200 && res.statusCode! <= 299 && res.data is Map) {
+      if (res.data.containsKey('data')) {
+        return StatusModel.fromJson(res.data['data']);
+      } else {
+        return StatusModel.fromJson(res.data as Map<String, dynamic>);
+      }
     }
-    _log!.w('getStatus() returned non-2xx response code');
-    return null;
+    _log.w('getStatus() returned non-2xx response code');
+    return StatusModel();
   }
 }

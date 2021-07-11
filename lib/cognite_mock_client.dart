@@ -31,6 +31,7 @@ class CDFMockApiClient extends CDFApiClient {
   CDFMockApiClient({logLevel: Level.error})
       : super(
             project: 'a_project',
+            token: null,
             apikey: 'key',
             baseUrl: 'https://api.cognitedata.com/',
             logLevel: logLevel,

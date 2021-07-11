@@ -2,11 +2,12 @@ part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
 /// Used to decode json and inject api-key header.
 class _CustomInterceptor extends Interceptor {
+  String? token;
   String? apikey;
-  List<HistoryModel>? history;
+  List<HistoryModel> history;
 
   @override
-  _CustomInterceptor(this.apikey, this.history);
+  _CustomInterceptor(this.apikey, this.token, this.history);
 
   @override
   void onRequest(
@@ -28,13 +29,17 @@ class _CustomInterceptor extends Interceptor {
         baseUrl = null;
       }
     }
-    history!.add(HistoryModel(
+    history.add(HistoryModel(
         baseUrl: baseUrl,
         path: path,
         method: options.method,
         id: id,
         request: options.data));
-    options.headers['api-key'] = this.apikey;
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    } else if (apikey != null) {
+      options.headers['api-key'] = apikey;
+    }
     options.responseType = ResponseType.json;
     handler.next(options);
   }
@@ -44,7 +49,7 @@ class _CustomInterceptor extends Interceptor {
     Response response,
     ResponseInterceptorHandler handler,
   ) async {
-    var iter = history!.reversed.iterator;
+    var iter = history.reversed.iterator;
     while (iter.moveNext()) {
       if (iter.current.id == response.requestOptions.extra['request_id']) {
         iter.current.response = response.data;
@@ -62,7 +67,7 @@ class _CustomInterceptor extends Interceptor {
     DioError err,
     ErrorInterceptorHandler handler,
   ) async {
-    var iter = history!.reversed.iterator;
+    var iter = history.reversed.iterator;
     while (iter.moveNext()) {
       if (err.response == null) continue;
       if (iter.current.id == err.response!.requestOptions.extra['request_id']) {
