@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Jul 12, 2021
+
+* Promote 0.2.0-nullsafety.1 to released version 0.2.0
+
 ## Jul 11, 2021
 
 * Add support for additional client param token to support standard bearer token  (OpenID Connect)
