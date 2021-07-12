@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## Jul 12, 2021
+
+* Promote 0.2.0-nullsafety.1 to released version 0.2.0
+
+## Jul 11, 2021
+
+* Add support for additional client param token to support standard bearer token  (OpenID Connect)
+* Clean up null safety to avoid having null variables (history and client)
+* Release updated preview at 0.2.0-nullsafety.1
+
+## Jun 6, 2021
+
+* Migrate to null safety
+* BREAKING: getDatapoints() now returns an empty DatapointModel instead of null
+* Release preview at 0.2.0-nullsafety
+
 ## Dec 3, 2020
 
 * Publish 0.1.3

@@ -3,19 +3,19 @@ part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 /// Represents the datapoints of a timeseries.
 class DatapointsModel {
   /// A server-generated ID for the object.
-  int id;
+  int? id;
 
   /// The externally supplied ID for the time series.
-  String externalId;
+  String? externalId;
 
   /// Whether the time series is string valued or not.
-  bool isString;
+  bool? isString;
 
   /// The physical unit of the time series.
-  String unit;
+  String? unit;
 
   /// Whether the time series is a step series or not.
-  bool isStep;
+  bool? isStep;
 
   /// Number of layers we have
   int layers = 0;
@@ -29,7 +29,7 @@ class DatapointsModel {
   get datapoints => _datapoints;
 
   /// Used to retrieve a given layer (default last added).
-  List<DatapointModel> layer({int layer}) {
+  List<DatapointModel> layer({int? layer}) {
     // Return only last layer if no layer specified
     if (layer == null) {
       layer = layers;
@@ -86,7 +86,7 @@ class DatapointsModel {
   void addDatapoints(DatapointsModel dp, {removeDuplicates: false}) {
     dp.clearLayers();
     _datapoints.addAll(dp._datapoints);
-    _datapoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    _datapoints.sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
     // Remove duplicates
     if (removeDuplicates) {
       for (var i = 0; i < _datapoints.length - 1; i++) {
@@ -110,7 +110,7 @@ class DatapointsModel {
 
   Map toJson() {
     List<Map<String, dynamic>> list = const [];
-    _datapoints.forEach((element) => list.add(element.toJson()));
+    _datapoints.forEach((element) => list.add(element.toJson() as Map<String, dynamic>));
     return {'externalId': externalId, 'datapoints': list};
   }
 }

@@ -5,43 +5,43 @@ part of 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 /// https://docs.cognite.com/api/v1/#operation/getMultiTimeSeriesDatapoints
 class TimeSeriesModel {
   /// A server-generated ID for the object.
-  int id;
+  int? id;
 
   /// The externally supplied ID for the time series.
-  String externalId;
+  String? externalId;
 
   /// The display short name of the time series. Note: Value of this field can differ from name presented by older versions of API 0.3-0.6.
-  String name;
+  String? name;
 
   /// Whether the time series is string valued or not.
-  bool isString;
+  bool? isString;
 
   /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32 bytes, value 512 bytes, up to 16 key-value pairs.
   Map<String, String> metadata = const {};
 
   /// The physical unit of the time series.
-  String unit;
+  String? unit;
 
   /// Asset ID of equipment linked to this time series.
-  int assetId;
+  int? assetId;
 
   /// Whether the time series is a step series or not.
-  bool isStep;
+  bool? isStep;
 
   /// Description of the time series.
-  String description;
+  String? description;
 
   /// The required security categories to access this time series.
   List<int> securityCategories = const [];
 
   /// The dataSet Id for the item.
-  int dataSetId;
+  int? dataSetId;
 
   /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-  int createdTime;
+  int? createdTime;
 
   /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-  int lastUpdatedTime;
+  int? lastUpdatedTime;
 
   @override
   String toString() {
@@ -49,7 +49,7 @@ class TimeSeriesModel {
   }
 
   /// Call statically to get a list of [TimeSeriesModel] from a json list of timeseries.
-  static List<TimeSeriesModel> listFromJson(List<dynamic> json) {
+  static List<TimeSeriesModel> listFromJson(List<dynamic>? json) {
     List<TimeSeriesModel> ts = json == null
         ? <TimeSeriesModel>[]
         : json.map((value) => TimeSeriesModel.fromJson(value)).toList();

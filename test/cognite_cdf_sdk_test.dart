@@ -3,13 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
 
 void main() {
-  CDFMockApiClient client;
+  CDFMockApiClient client = CDFMockApiClient();
 
-  setUpAll(() {
-    client = CDFMockApiClient();
-  });
-
-  group('login', () {
+  group('login apikey', () {
     test('should return user info if logged in', () async {
       client.setMock(body: """{
     "data": {
@@ -32,13 +28,44 @@ void main() {
     });
   });
 
+  group('login token', () {
+    test('should return user info if logged in', () async {
+      client.updateToken("something");
+      client.setMock(body: """{
+        "subject": "user@cognite.com",
+          "projects": [
+            {
+              "projectUrlName": "publicdata",
+              "groups": [
+                62353240994493,
+                7356024348897575
+              ]
+            }
+          ]
+}""");
+      var res = await client.getStatus();
+      expect(client.history[client.history.length - 1].statusCode, 200,
+          reason: 'Correct error code');
+      expect(res, isNotNull, reason: 'Response is expected');
+      expect(res.user, "user@cognite.com");
+      expect(res.loggedIn, true);
+      expect(res.project, "publicdata");
+      expect(res.projectId, isNull,
+          reason: "Projectid should not be set for token");
+      expect(res.apiKeyId, isNull,
+          reason: "apikeyId should not be set for token");
+      client.updateToken(null);
+    });
+  });
+
   group('login failed', () {
     test('should fail login status', () async {
       client.setMock(statusCode: 403);
       var res = await client.getStatus();
       expect(client.history[client.history.length - 1].statusCode, 403,
           reason: 'Correct error code');
-      expect(res, isNull, reason: 'Null response is expected');
+      expect(res.user, isNull, reason: 'Null user is expected');
+      expect(res.loggedIn, false, reason: 'LoggedIn is false is expected');
     });
   });
   group('retrieve timeseries', () {
@@ -71,12 +98,12 @@ void main() {
       expect(client.history[client.history.length - 1].statusCode, 200,
           reason: 'Correct error code');
       expect(res, isNotNull, reason: 'Response is expected');
-      expect(res.length, 2, reason: 'Two timeseries entries');
-      expect(res[0].id, 29107693408255);
-      expect(res[1].id, 29101293405233);
-      expect(res[0].externalId, "ts_c2009283ac84526e9f0e01ef4cc9fa2a");
+      expect(res?.length, 2, reason: 'Two timeseries entries');
+      expect(res?[0].id, 29107693408255);
+      expect(res?[1].id, 29101293405233);
+      expect(res?[0].externalId, "ts_c2009283ac84526e9f0e01ef4cc9fa2a");
       expect(
-        res[1].externalId,
+        res?[1].externalId,
         "ts_power_switch",
       );
     });
@@ -94,7 +121,7 @@ void main() {
       var res = await TimeSeriesAPI(client).getDatapoints(filter);
       expect(client.history[client.history.length - 1].statusCode, 404,
           reason: 'Correct error code');
-      expect(res, isNull, reason: 'Response is not expected');
+      expect(res.datapointsLength, 0, reason: 'Response is not expected');
     });
     test('should return a list of datapoints', () async {
       var file = File(Directory.current.path + '/test/response-1.json');

@@ -16,26 +16,26 @@ class DatapointsFilterModel {
   /// Return up to this number of datapoints.
   ///
   /// Maximum is 100000 non-aggregated data points and 10000 aggregated data points.
-  int limit;
+  int? limit;
 
   /// Specify the aggregates to return, or an empty array if this sub-query should return datapoints without aggregation.
   ///
   /// "average" "max" "min" "count" "sum" "interpolation" "stepInterpolation"
   /// "totalVariation" "continuousVariance" "discreteVariance"
   List<String> aggregates = const [];
-  int _resolution;
+  late int _resolution;
 
   /// The time granularity size and unit to aggregate over.
-  String granularity;
+  String? granularity;
 
   /// Whether to include the last datapoint before the requested time period, and the first one after.
-  bool includeOutsidePoints;
+  bool? includeOutsidePoints;
 
   /// ExternalId of timeseries to retrieve.
-  String externalId;
+  String? externalId;
 
   /// The resolution in seconds (i.e. time between each datapoint).
-  get resolution => _resolution;
+  int get resolution => _resolution;
   set start(int i) {
     if (i <= 0) {
       throw CDFApiClientDatapointFilterException;
@@ -44,8 +44,8 @@ class DatapointsFilterModel {
     }
   }
 
-  get start => _start;
-  get end => _end;
+  int get start => _start;
+  int get end => _end;
   set end(int i) {
     if (i <= 0) {
       throw CDFApiClientDatapointFilterException;
@@ -90,12 +90,12 @@ class DatapointsFilterModel {
   calculateLimit() {
     if (_start > 0 && _end > 0) {
       limit = ((_end - _start) / (1000 * _resolution)).round();
-      if (aggregates != null && limit > 10000) {
+      if (limit! > 10000) {
         limit = 10000;
-      } else if (limit > 100000) {
+      } else if (limit! > 100000) {
         limit = 100000;
       }
-      if (limit < 100) {
+      if (limit! < 100) {
         limit = 100;
       }
     }
@@ -104,8 +104,8 @@ class DatapointsFilterModel {
   Map toJson() {
     Map ret = {
       'externalId': externalId,
-      'start': _start ?? 0,
-      'end': _end ?? 0,
+      'start': _start,
+      'end': _end,
       'limit': limit ?? 100,
       'includeOutsidePoints': includeOutsidePoints ?? false
     };

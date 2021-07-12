@@ -31,7 +31,7 @@ Instantiate an http client and off you go!
 
 NOTE!!! You need to supply an HttpClientAdapter() implementation as either found
 in dio/adapter.dart (DefaultHttpClientAdapter()) or dio/adapter_browser.dart
-(BrowserHttpClientAdapter()).
+(BrowserHttpClientAdapter()). See below for how to support both web and app.
 
 ```
 import 'package:cognite_cdf_sdk/cognite_cdf_sdk.dart';
@@ -49,4 +49,28 @@ main() async {
     print(res[0].externalId);
   }
 }
+```
+
+## Use Web and App httpAdapter in Same Code
+
+Create two files, httpadapter.dart and webhttpadapter.dart, that both defines a GenericHttpAdapter() class:
+
+httpadapter.dart:
+```
+import 'package:dio/adapter.dart';
+
+class GenericHttpClientAdapter extends DefaultHttpClientAdapter {}
+```
+
+webhttpadapter.dart:
+```
+import 'package:dio/adapter_browser.dart';
+
+class GenericHttpClientAdapter extends BrowserHttpClientAdapter {}
+```
+
+You can then use the generic adapter class this way:
+```
+import 'httpadapter.dart' if (dart.library.html) 'webhttpadapter.dart';
+var client = CDFApiClient(httpAdapter: GenericHttpClientAdapter());
 ```
